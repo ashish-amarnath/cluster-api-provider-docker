@@ -18,6 +18,9 @@ package controllers
 
 import (
 	"context"
+	"fmt"
+	"io/ioutil"
+	"os"
 
 	"github.com/go-logr/logr"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -39,6 +42,11 @@ type DockerClusterReconciler struct {
 func (r *DockerClusterReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	ctx := context.Background()
 	log := r.Log.WithValues("dockercluster", req.NamespacedName)
+	log.Info("Reconciling cluster")
+	msg := fmt.Sprintf("Reconciling cluster %s", req.NamespacedName)
+	fmt.Fprintf(os.Stdout, msg)
+	fmt.Fprintf(os.Stderr, msg)
+	_ = ioutil.WriteFile("/tmp/ashisha-debug", []byte(msg), 0666)
 
 	dockerCluster := &infrastructurev1alpha2.DockerCluster{}
 	if err := r.Client.Get(ctx, req.NamespacedName, dockerCluster); err != nil {
